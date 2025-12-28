@@ -4,6 +4,13 @@
              xsi:schemaLocation="https://jakarta.ee/xml/ns/persistence https://jakarta.ee/xml/ns/persistence/persistence_3_2.xsd"
              version="3.2">
   <persistence-unit name="default">
+<!--      <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>-->
+
+      <class>ir.maktabsharif.models.User</class>
+<!--      <class>ir.maktabsharif.models.Card</class>-->
+<!--      <class>ir.maktabsharif.models.PayaBatchItem</class>-->
+<!--      <class>ir.maktabsharif.models.Transaction</class>-->
+
       <properties>
         <property
                 name="jakarta.persistence.jdbc.url"
@@ -19,7 +26,7 @@
         
         <property
                 name="hibernate.hbm2ddl.auto"
-                value="update"/>
+                value="create"/>
 
         <property
                 name="hibernate.show_sql"
