@@ -24,25 +24,13 @@ public class Main {
     //nabayad EntityManager ro behesh pas bedim vali inja baraye mesal daddim:
     public static void findUserByUsername(EntityManager entityManager, String username) {
 
-        // u.username = ?1 and u.firstname = ?2
+        // :my_user_param or u.username = ?1
         TypedQuery<User> typedQuery = entityManager.createQuery(
-                "select u from User u where u.username = ?1",
+                "select u from User u where u.username = :my_user_param",
                 User.class
         );
 
-        typedQuery.setParameter(1, username);
+        typedQuery.setParameter("my_user_param", username);
         System.out.println(typedQuery.getSingleResultOrNull());
-
-        // ye rahe dg:
-
-        System.out.println(
-                entityManager
-                        .createQuery(
-                        "select u from User u where u.username = ?1",
-                        User.class
-                        )
-                        .setParameter(1, username)
-                        .getSingleResultOrNull()
-        );
     }
 }
