@@ -12,25 +12,19 @@ public class Main {
 
             try (EntityManager entityManager = emf.createEntityManager()) {
 
-                findUserByUsername(entityManager, "admin");
-                findUserByUsername(entityManager, "admin1");
+                entityManager.getTransaction().begin();
 
+                // state remove:
+                User user = entityManager.find(User.class, 5L);
+
+                // in mire tu halate remove va da zamane tarakonesh vaghti commit mikonim az DB pak mishe:
+                entityManager.remove(user);
+
+
+                entityManager.getTransaction().commit();
             }
 
         }
 
-    }
-
-    //nabayad EntityManager ro behesh pas bedim vali inja baraye mesal daddim:
-    public static void findUserByUsername(EntityManager entityManager, String username) {
-
-        // :my_user_param or u.username = ?1
-        TypedQuery<User> typedQuery = entityManager.createQuery(
-                "select u from User u where u.username = :my_user_param",
-                User.class
-        );
-
-        typedQuery.setParameter("my_user_param", username);
-        System.out.println(typedQuery.getSingleResultOrNull());
     }
 }
