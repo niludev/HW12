@@ -22,10 +22,11 @@
         <property
                 name="jakarta.persistence.jdbc.password"
                 value="apppass"/>
-        
+
+<!--          sakht / update jadval ha -->
         <property
                 name="hibernate.hbm2ddl.auto"
-                value="create"/>
+                value="update"/>
 
         <property
                 name="hibernate.show_sql"
