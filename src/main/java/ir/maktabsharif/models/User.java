@@ -13,7 +13,7 @@ import lombok.ToString;
 @Table(
         name = User.TABLE_NAME,
         indexes = {  // baraye search sari tar --> ke record ha ro tak tak check nakone
-//            @Index(columnList = User.ID_COLUMN),
+            @Index(columnList = User.ID_COLUMN),
             @Index(columnList = User.USERNAME_COLUMN, unique = true)
         }
 )

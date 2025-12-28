@@ -7,9 +7,8 @@
 <!--      <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>-->
 
       <class>ir.maktabsharif.models.User</class>
-<!--      <class>ir.maktabsharif.models.Card</class>-->
-<!--      <class>ir.maktabsharif.models.PayaBatchItem</class>-->
-<!--      <class>ir.maktabsharif.models.Transaction</class>-->
+      <class>ir.maktabsharif.models.Card</class>
+      <class>ir.maktabsharif.models.Transaction</class>
 
       <properties>
         <property
