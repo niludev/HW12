@@ -1,12 +1,7 @@
 package ir.maktabsharif;
 
 import ir.maktabsharif.models.User;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.EntityManagerFactory;
-import jakarta.persistence.EntityTransaction;
-import jakarta.persistence.Persistence;
-
-import java.util.List;
+import jakarta.persistence.*;
 
 //TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
 // click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
@@ -17,27 +12,37 @@ public class Main {
 
             try (EntityManager entityManager = emf.createEntityManager()) {
 
+                findUserByUsername(entityManager, "admin");
+                findUserByUsername(entityManager, "admin1");
 
-//                EntityTransaction entityTransaction = entityManager.getTransaction();
-//                entityTransaction.begin();
-
-                // peyda kardane hameye user ha
-                // ba query JPQL: native nist --> bar hasbe esme class e java va esme field haye java
-                List<User> resultList = entityManager.createQuery(
-                        "select u from User u where u.username is not null",
-                        User.class
-                ).getResultList();
-
-                // in bayad ba result yeki bashe:
-                // "select u.username from User u where u.username is not null",
-                // String.class
-
-                resultList.forEach(user -> System.out.println(user.getId() + " contains in em: " + entityManager.contains(user)));
-
-//                entityTransaction.commit();
             }
 
         }
 
+    }
+
+    //nabayad EntityManager ro behesh pas bedim vali inja baraye mesal daddim:
+    public static void findUserByUsername(EntityManager entityManager, String username) {
+
+        // u.username = ?1 and u.firstname = ?2
+        TypedQuery<User> typedQuery = entityManager.createQuery(
+                "select u from User u where u.username = ?1",
+                User.class
+        );
+
+        typedQuery.setParameter(1, username);
+        System.out.println(typedQuery.getSingleResultOrNull());
+
+        // ye rahe dg:
+
+        System.out.println(
+                entityManager
+                        .createQuery(
+                        "select u from User u where u.username = ?1",
+                        User.class
+                        )
+                        .setParameter(1, username)
+                        .getSingleResultOrNull()
+        );
     }
 }
