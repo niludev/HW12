@@ -22,6 +22,8 @@ import java.time.LocalDateTime;
 @Getter
 @NoArgsConstructor
 @ToString
+
+// har transaction 2 card dare (ManyToOne)
 public class Transaction extends BaseDomain<Long> {
 
     public static final String TABLE_NAME = "transactions";
@@ -36,11 +38,13 @@ public class Transaction extends BaseDomain<Long> {
     public static final String CREATED_AT_COLUMN = "created_at";
 
 
-    @Column(name = FROM_CARD_ID_COLUMN, nullable = false)
-    private Long fromCardId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = FROM_CARD_ID_COLUMN, nullable = false)
+    private Card fromCard;
 
-    @Column(name = TO_CARD_ID_COLUMN, nullable = false)
-    private Long toCardId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = TO_CARD_ID_COLUMN, nullable = false)
+    private Card toCard;
 
     @Column(name = AMOUNT_COLUMN, nullable = false)
     private Long amount;

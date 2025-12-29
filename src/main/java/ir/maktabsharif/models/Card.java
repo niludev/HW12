@@ -1,10 +1,7 @@
 package ir.maktabsharif.models;
 
 import ir.maktabsharif.models.base.BaseDomain;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Index;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -21,6 +18,8 @@ import lombok.ToString;
 @Setter
 @NoArgsConstructor
 @ToString
+
+// har card faghat male ye user hast (ManyToOne)
 public class Card extends BaseDomain<Long> {
 
     public static final String TABLE_NAME = "cards";
@@ -38,6 +37,9 @@ public class Card extends BaseDomain<Long> {
     @Column(name = BALANCE_COLUMN)
     private Long balance;
 
-    @Column(name = USERID_COLUMN)
-    private Long userId;
+    //foreign key
+    // har card be ye user vasl hast
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = USERID_COLUMN, nullable = false)
+    private User user;
 }

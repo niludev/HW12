@@ -7,6 +7,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.util.List;
+
 // NoArgsConstructor: constructor e khali
 
 @Entity
@@ -22,6 +24,7 @@ import lombok.ToString;
 @NoArgsConstructor
 @ToString
 
+// har user mitune chand ta card dashte bashe (OneToMany)
 public class User extends BaseDomain<Long> {
     public static final String TABLE_NAME = "users";
 //    public static final String ID_COLUMN = "id";
@@ -38,4 +41,7 @@ public class User extends BaseDomain<Long> {
 
     @Column(name = PASSWORD_COLUMN, nullable = false)
     private String password;
+
+    @OneToMany(mappedBy = "user")
+    private List<Card> cards;
 }
