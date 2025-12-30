@@ -40,6 +40,6 @@ public class Card extends BaseDomain<Long> {
     //foreign key
     // har card be ye user vasl hast
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = USERID_COLUMN, nullable = false)
+    @JoinColumn(name = USERID_COLUMN, nullable = false) // customize sotune foreign key
     private User user;
 }
