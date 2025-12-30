@@ -10,7 +10,6 @@ import java.sql.*;
 
 public class UserRepository  {
 
-
     public User save(User user) {
         EntityManager em = JpaUtil.getEntityManager();
         EntityTransaction tx = em.getTransaction();
@@ -66,13 +65,33 @@ public class UserRepository  {
         }
     }
 
-    public User findByUsername(String username) {
+    public User findById(Long userId) {
+        EntityManager em = JpaUtil.getEntityManager();
+
+        try {
+            return em.createQuery(
+                            "SELECT u FROM User u WHERE u.id = :userId",
+                            User.class)
+                    .setParameter("userId", userId)
+                    .getSingleResultOrNull();
+
+        } catch (PersistenceException e) {
+            throw e;
+
+        } finally {
+            em.close();
+        }
+    }
+
+
+        public User findByUsername(String username) {
 
         EntityManager em = JpaUtil.getEntityManager();
 
         try {
             return em.createQuery(
-                    "SELECT u.id, u.username, u.password FROM User u WHERE username = :username",
+//                    "SELECT u.id, u.username, u.password FROM User u WHERE username = :username",
+                    "SELECT u FROM User u WHERE username = :username",
                     User.class)
                     .setParameter("username", username)
                     .getSingleResultOrNull();

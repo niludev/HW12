@@ -1,28 +1,28 @@
 package ir.maktabsharif;
 
-import ir.maktabsharif.models.User;
-import jakarta.persistence.*;
+import ir.maktabsharif.config.ApplicationContext;
+import ir.maktabsharif.config.JpaUtil;
+import ir.maktabsharif.view.BankConsoleApp;
 
-//TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
-// click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
 public class Main {
     public static void main(String[] args) {
 
-        try (EntityManagerFactory emf = Persistence.createEntityManagerFactory("default")) {
+//        ApplicationContext ctx = ApplicationContext.getInstance();
+//
+//        BankConsoleApp app = new BankConsoleApp(
+//                ctx.getUserService(),
+//                ctx.getCardService(),
+//                ctx.getTransactionService()
+//        );
 
-            try (EntityManager entityManager = emf.createEntityManager()) {
+        // baraye behtar shodan un khate bala ro bordam tu ApplicationContext va be createApp tabdilesh kardam
+        try {
+            BankConsoleApp app = ApplicationContext.getInstance().createApp();
 
-                entityManager.getTransaction().begin();
+            app.run();
 
-
-                User user = entityManager.find(User.class, 4L);
-
-                entityManager.persist(user);
-
-                entityManager.getTransaction().commit();
-            }
-
+        } finally {
+            JpaUtil.close();
         }
-
     }
 }

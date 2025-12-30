@@ -11,7 +11,8 @@ import lombok.ToString;
 @Table(
         name = Card.TABLE_NAME,
         indexes = {
-                @Index(columnList = Card.BANK_NAME_COLUMN)
+                @Index(columnList = Card.BANK_NAME_COLUMN),
+                @Index(columnList = Card.CARD_NUMBER_COLUMN)
         }
 )
 @Getter

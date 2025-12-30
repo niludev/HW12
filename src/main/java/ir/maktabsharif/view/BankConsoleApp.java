@@ -2,6 +2,7 @@ package ir.maktabsharif.view;
 
 
 
+import ir.maktabsharif.models.PayaBatchItem;
 import ir.maktabsharif.models.User;
 import ir.maktabsharif.models.Card;
 import ir.maktabsharif.service.CardService;
@@ -268,7 +269,7 @@ public class BankConsoleApp {
         System.out.println("Bank cards " + bankName + ":");
 
         for (Card card : cards) {
-            System.out.println("ID: " + card.getId() + " | Number: " + card.getCardNumber() + " | Balance: " + card.getBalance() + " | userId: " + card.getUserId());
+            System.out.println("ID: " + card.getId() + " | Number: " + card.getCardNumber() + " | Balance: " + card.getBalance() + " | userId: " + card.getUser().getId());
         }
     }
 

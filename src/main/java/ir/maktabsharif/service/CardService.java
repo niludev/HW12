@@ -1,25 +1,38 @@
 package ir.maktabsharif.service;
 
-import models.Card;
-import repository.CardRepository;
+
+
+import ir.maktabsharif.models.Card;
+import ir.maktabsharif.models.User;
+import ir.maktabsharif.repository.CardRepository;
+import ir.maktabsharif.repository.UserRepository;
 
 import java.util.List;
 
 public class CardService {
     CardRepository cardRepository;
+    UserRepository userRepository;
 
-    public CardService (CardRepository cardRepository) {
+    public CardService (CardRepository cardRepository, UserRepository userRepository) {
         this.cardRepository = cardRepository;
+        this.userRepository = userRepository;
     }
 
     public Card registerCard (String cardNumber, String bankName, Long balance, Long userId) {
+
+        User user = userRepository.findById(userId);
+
+        if (user == null) {
+            System.out.println("User not found");
+            return null;
+        }
 
         Card card = new Card();
 
         card.setCardNumber(cardNumber);
         card.setBankName(bankName);
         card.setBalance(balance);
-        card.setUserId(userId);
+        card.setUser(user);
 
         cardRepository.save(card);
 

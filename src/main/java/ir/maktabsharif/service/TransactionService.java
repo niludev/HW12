@@ -1,12 +1,14 @@
 package ir.maktabsharif.service;
 
-import models.Card;
-import models.PayaBatchItem;
-import models.Transaction;
-import models.enums.TransactionStatus;
-import models.enums.TransactionsType;
-import repository.CardRepository;
-import repository.TransactionRepository;
+
+
+import ir.maktabsharif.models.Card;
+import ir.maktabsharif.models.PayaBatchItem;
+import ir.maktabsharif.models.Transaction;
+import ir.maktabsharif.models.enums.TransactionStatus;
+import ir.maktabsharif.models.enums.TransactionsType;
+import ir.maktabsharif.repository.CardRepository;
+import ir.maktabsharif.repository.TransactionRepository;
 
 import java.util.List;
 
@@ -32,8 +34,8 @@ public class TransactionService {
     private void recordTransaction(Card fromCard, Card toCard, Long amount, Long fee, String type, String status, Long batchId, String description) {
 
         Transaction transaction = new Transaction();
-        transaction.setFromCardId(fromCard.getId());
-        transaction.setToCardId(toCard.getId());
+        transaction.setFromCard(fromCard);
+        transaction.setToCard(toCard);
         transaction.setAmount(amount);
         transaction.setFee(fee);
         transaction.setType(type);

@@ -1,186 +1,168 @@
 package ir.maktabsharif.repository;
 
-import config.ApplicationContext;
-import models.Card;
+
+import ir.maktabsharif.config.JpaUtil;
+import ir.maktabsharif.models.Card;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityTransaction;
+import jakarta.persistence.PersistenceException;
 
 import java.sql.*;
-import java.util.ArrayList;
 import java.util.List;
 
 public class CardRepository {
-    private final Connection connection;
-
-    public CardRepository() {
-        this.connection = ApplicationContext.getInstance().getConnection();
-    }
-
 
     public Card save(Card card) {
 
-        String sql = "INSERT INTO cards (card_number, bank_name, balance, user_id) VALUES (?, ?, ?, ?)";
+        EntityManager em = JpaUtil.getEntityManager();
+        EntityTransaction tx = em.getTransaction();
 
-        try(PreparedStatement pps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+        try {
+            tx.begin();
+            em.persist(card);
+            tx.commit();
+            return card;
 
-            pps.setString(1, card.getCardNumber());
-            pps.setString(2, card.getBankName());
-            pps.setLong(3, card.getBalance());
-            pps.setLong(4, card.getUserId());
+        } catch (RuntimeException e) {
+            if (tx.isActive()) tx.rollback();
+            throw e;
 
-//          executeQuery ---> فقط برای select هست
-//          برای: INSERT/UPDATE/DELETE
-            pps.executeUpdate();
-
-            ResultSet rs = pps.getGeneratedKeys();
-
-//          نتیجه ی rs ستون ها اسم ندارن
-            if(rs.next()) {
-                card.setId(rs.getLong(1));
-            }
-
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
+        } finally {
+            em.close();
         }
-
-        return card;
     }
 
     public List<Card> findByUserId(Long userId) {
-        String sql = "SELECT id, card_number, bank_name, balance FROM cards WHERE user_id = ?";
 
-        List<Card> cards = new ArrayList<>();
+        EntityManager em = JpaUtil.getEntityManager();
 
-        try(PreparedStatement pps = connection.prepareStatement(sql)) {
+        try {
+            return em.createQuery(
+                    "select c from Card c where c.user.id = :userId",
+                    Card.class
+            ).setParameter("userId", userId)
+                    .getResultList();
 
-            pps.setLong(1, userId);
+        } catch (PersistenceException e) {
+            throw e;
 
-            ResultSet rs = pps.executeQuery();
-
-
-            while (rs.next()) {
-                Card card = new Card();
-
-                card.setId(rs.getLong("id"));
-                card.setCardNumber(rs.getString("card_number"));
-                card.setBankName(rs.getString("bank_name"));
-                card.setBalance(rs.getLong("balance"));
-                card.setUserId(userId);
-
-
-                cards.add(card);
-            }
-
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
+        } finally {
+            em.close();
         }
-
-        return cards;
     }
 
-    public Card mapRowToCard(ResultSet rs) throws SQLException {
-        Card card = new Card();
-
-        card.setId(rs.getLong("id"));
-        card.setCardNumber(rs.getString("card_number"));
-        card.setBankName(rs.getString("bank_name"));
-        card.setBalance(rs.getLong("balance"));
-        card.setUserId(rs.getLong("user_id"));
-
-        return card;
-    }
-
-//    می شه card_number هم درخواست کرد با اینکه داریمش
     public Card findByCardNumber(String cardNumber) {
-        String sql = "SELECT id, card_number, bank_name, balance, user_id FROM cards WHERE card_number = ?";
 
-        try(PreparedStatement pps = connection.prepareStatement(sql)) {
+        EntityManager em = JpaUtil.getEntityManager();
 
-            pps.setString(1, cardNumber);
+        try {
+            return em.createQuery(
+                    "select c from Card c where c.cardNumber = :cardNumber",
+                    Card.class
+            ).setParameter("cardNumber", cardNumber)
+                    .getSingleResultOrNull();
 
-            ResultSet rs = pps.executeQuery();
+        } catch (PersistenceException e) {
+            throw e;
 
-            if (rs.next()) {
-                return mapRowToCard(rs);
-            }
-
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
+        } finally {
+            em.close();
         }
-
-        return null;
     }
 
     public List<Card> findByBankName (String bankName) {
-        String sql = "SELECT id, card_number, bank_name, balance, user_id FROM cards WHERE bank_name = ?";
-        List<Card> cards = new ArrayList<>();
 
-        try(PreparedStatement pps = connection.prepareStatement(sql)) {
+        EntityManager em = JpaUtil.getEntityManager();
 
-            pps.setString(1, bankName);
+        try {
+            return em.createQuery(
+                            "select c from Card c where c.bankName = :bankName",
+                            Card.class
+                    ).setParameter("bankName", bankName)
+                    .getResultList();
 
-            ResultSet rs = pps.executeQuery();
+        } catch (PersistenceException e) {
+            throw e;
 
-            while (rs.next()) {
-
-//                Card card = mapRowToCard(rs);
-                cards.add(mapRowToCard(rs));
-            }
-
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
+        } finally {
+            em.close();
         }
-
-        return cards;
     }
 
     public void updateBalance (Long cardId, Long newBalance) {
-        String sql = "UPDATE cards SET balance = ? WHERE id = ?";
+        EntityManager em = JpaUtil.getEntityManager();
+        EntityTransaction tx = em.getTransaction();
 
-        try(PreparedStatement pps = connection.prepareStatement(sql)) {
+        try {
+            tx.begin();
 
-            pps.setLong(1, newBalance);
-            pps.setLong(2, cardId);
+            Card card = em.find(Card.class, cardId);
 
-            pps.executeUpdate();
+            if (card != null) {
+                card.setBalance(newBalance);
+            }
 
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
+//            dg persist nemikonim bala ba find bordimesh tuye halate managed
+//            va chizi ham be DB nemikhaim ezafe konim
+//            em.persist(card);
+
+            tx.commit();
+
+        } catch (RuntimeException e) {
+            if (tx.isActive()) tx.rollback();
+            throw e;
+
+        } finally {
+            em.close();
         }
     }
 
     public void deleteCardByCardNumber (String cardNumber) {
-        String sql = "DELETE FROM cards WHERE card_number = ?";
 
-        try(PreparedStatement pps = connection.prepareStatement(sql)) {
+        EntityManager em = JpaUtil.getEntityManager();
+        EntityTransaction tx = em.getTransaction();
 
-            pps.setString(1, cardNumber);
+        try {
+            tx.begin();
 
-            pps.executeUpdate();
+            Card card = em.createQuery(
+                    "select c from Card c where c.cardNumber = :cardNumber",
+                    Card.class
+            ).setParameter("cardNumber", cardNumber)
+                    .getSingleResultOrNull();
+//                    .getResultList();  // getSingleResultOrNull male Hibernate 6 hast na JPQL  ---> vali chon ma dar pom ino darim: hibernate-core mishe azash estefade kard
 
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
+
+            if (card != null) {
+                em.remove(card);
+            }
+
+            tx.commit();
+
+        } catch (RuntimeException e) {
+            if (tx.isActive()) tx.rollback();
+            throw e;
+
+        } finally {
+            em.close();
         }
     }
 
 
     public List<Card> findAll () {
-        String sql = "SELECT id, card_number, bank_name, balance, user_id FROM cards";
 
-        List<Card> cards = new ArrayList<>();
+        EntityManager em = JpaUtil.getEntityManager();
 
-        try(PreparedStatement pps = connection.prepareStatement(sql)) {
+        try {
+            return em.createQuery("select c from Card c", Card.class)
+                    .getResultList();
 
-            ResultSet rs = pps.executeQuery();
+        } catch (PersistenceException e) {
+            throw e;
 
-            while (rs.next()) {
-//                Card card = mapRowToCard(rs);
-                cards.add(mapRowToCard(rs));
-            }
-
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
+        } finally {
+            em.close();
         }
-
-        return cards;
     }
 
 
